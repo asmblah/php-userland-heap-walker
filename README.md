@@ -77,7 +77,7 @@ assert($pathSets[0]->getPaths()[0]->getEventualValue()->description === 'a cabba
 - Values bound to `Closure->$this` or inherited by Closures via `use (...)`
   with no other references will not be discovered.
 
-- The local scope of paused Generators is not accessible. For example,
+- The local scope of paused [Generators](https://www.php.net/manual/en/language.generators.overview.php) is not accessible. For example,
   if a paused generator has an iterator variable `$i` declared inside with no
   other references to it existing, it will not be discovered.
 
@@ -92,5 +92,6 @@ assert($pathSets[0]->getPaths()[0]->getEventualValue()->description === 'a cabba
   reference to its `PDOConnection`, but there is no way to access the `PDOConnection`
   from the `PDOStatement`.
   It should be possible to use the [uopz extension](https://www.php.net/manual/en/book.uopz.php)
-  to hook `PDOConnection->prepare(...)` and link back to it from the `PDOStatement`, however
-  this must be done carefully to avoid preventing the `PDOConnection` from being GC'd.
+  to hook `PDOConnection->prepare(...)` and link back to it from the `PDOStatement` (in a future
+  plugin for this tool, for example), however this must be done carefully to avoid preventing
+  the `PDOConnection` from being GC'd.
