@@ -7,6 +7,7 @@ namespace Asmblah\HeapWalk\Tests\Acceptance\Integrated\Walk;
 use Asmblah\HeapWalk\Result\Path\Descension\Root\GlobalVariableRoot;
 use Asmblah\HeapWalk\Tests\Acceptance\AcceptanceTestCase;
 use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\Thing;
+use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\UncapturedClass;
 use Asmblah\HeapWalk\Walker\ArrayWalker;
 use Asmblah\HeapWalk\Walker\HeapWalker;
 use Asmblah\HeapWalk\Walker\InstanceWalker;
@@ -48,6 +49,12 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
 
         $thingForClosures = new Thing('my thing for closures');
 
+        $thingInsideUncapturedObject = new UncapturedClass('I contain a thing');
+        $thingInsideUncapturedObject->setValue(new Thing('I am inside another object'));
+
+        $recursiveUncapturedObject = new UncapturedClass('I contain a reference to myself');
+        $recursiveUncapturedObject->setValue($recursiveUncapturedObject);
+
         $this->heapWalker = new HeapWalker($valueWalker, [
             // Non-Thing, to be ignored.
             new GlobalVariableRoot('stdClass-to-ignore', new stdClass()),
@@ -67,7 +74,11 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
             // Note that it is static so that its $this does not point to the instance of this PHPUnit test class.
             new GlobalVariableRoot('closure-inheriting-thing', static function () use ($thingForClosures) {
                 return $thingForClosures;
-            })
+            }),
+            // A Thing that is inside an instance of an uncaptured class.
+            new GlobalVariableRoot('thing-inside-other-object', $thingInsideUncapturedObject),
+            // An uncaptured non-Thing that just refers to itself, to test recursion handling.
+            $recursiveUncapturedObject,
         ]);
     }
 
@@ -75,7 +86,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
     {
         $pathSets = $this->heapWalker->getInstancePathSets([Thing::class]);
 
-        static::assertCount(5, $pathSets);
+        static::assertCount(6, $pathSets);
         static::assertEquals(
             [
                 'fqcn' => Thing::class,
@@ -123,6 +134,15 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
                 ],
             ],
             $pathSets[4]->toArray()
+        );
+        static::assertEquals(
+            [
+                'fqcn' => Thing::class,
+                'paths' => [
+                    '$GLOBALS[thing-inside-other-object]->(Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\UncapturedClass::$value)',
+                ],
+            ],
+            $pathSets[5]->toArray()
         );
     }
 }

@@ -44,20 +44,41 @@ class HeapWalker
     public function getInstancePathSets(array $fqcns): array
     {
         $dataByInstanceHash = [];
+        $instanceHashesVisited = [];
 
         foreach ($this->roots as $root) {
             $this->valueWalker->walkValue(
                 $root->getValue(),
-                function ($value, array $descensions) use ($fqcns, &$dataByInstanceHash) {
-                    if (is_object($value) && in_array(get_class($value), $fqcns, true)) {
+                function ($value, array $descensions) use ($fqcns, &$dataByInstanceHash, &$instanceHashesVisited) {
+                    if (!is_object($value)) {
+                        // We're only interested in inspecting objects, but we still want to recurse
+                        // as applicable, eg. into arrays.
+                        return true;
+                    }
+
+                    $descend = true;
+                    $hash = spl_object_hash($value);
+
+                    if (array_key_exists($hash, $instanceHashesVisited)) {
+                        // We already processed this object, don't descend into it again.
+                        $descend = false;
+                    } else {
+                        $instanceHashesVisited[$hash] = true;
+                    }
+
+                    // TODO: Handle subclasses
+                    if (in_array(get_class($value), $fqcns, true)) {
                         $hash = spl_object_hash($value);
+                        $path = new Path($descensions);
 
                         if (!array_key_exists($hash, $dataByInstanceHash)) {
                             $dataByInstanceHash[$hash] = ['instance' => $value, 'paths' => []];
                         }
 
-                        $dataByInstanceHash[$hash]['paths'][] = new Path($descensions);
+                        $dataByInstanceHash[$hash]['paths'][] = $path;
                     }
+
+                    return $descend;
                 },
                 [$root]
             );

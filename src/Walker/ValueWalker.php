@@ -59,7 +59,10 @@ class ValueWalker
             throw new RuntimeException(sprintf('Limit of %d reached (depth is %d)', $this->maxDepth, $depth));
         }
 
-        $visitor($value, $descensions);
+        if ($visitor($value, $descensions) === false) {
+            // Visitor has specified not to recurse into this value.
+            return;
+        }
 
         if (is_array($value)) {
             if ($this->alreadyProcessed($value, $descensions)) {
