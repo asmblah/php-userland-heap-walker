@@ -19,6 +19,7 @@ composer require --dev asmblah/heap-walker
 // ...
 
 $heapWalk = new HeapWalk();
+// Find all instances of Item and how to reach them.
 $pathSets = $heapWalk->getInstancePathSets([Item::class]);
 
 // Inspect the result as needed.
@@ -57,6 +58,7 @@ class Bag
 Bag::init();
 
 $heapWalk = new HeapWalk();
+// Find all instances of Item and how to reach them.
 $pathSets = $heapWalk->getInstancePathSets([Item::class]);
 
 // Inspect the result as needed.
