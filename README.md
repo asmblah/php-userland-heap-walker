@@ -1,5 +1,7 @@
 # PHP userland heap walker
 
+[![Build Status](https://github.com/asmblah/php-userland-heap-walker/workflows/CI/badge.svg)](https://github.com/asmblah/php-userland-heap-walker/actions?query=workflow%3ACI)
+
 Walks as much of the userland heap as possible, looking for instances of the given FQCN (Fully-Qualified Class Name).
 
 This helps figure out where a given object is being referred to from,
