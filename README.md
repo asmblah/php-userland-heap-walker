@@ -68,8 +68,29 @@ assert($pathSets[0]->getPaths()[0]->getEventualValue() instanceof Item);
 assert($pathSets[0]->getPaths()[0]->getEventualValue()->description === 'a cabbage');
 ```
 
-## Caveats
+## Caveats & limitations
 
-Scopes other than the global one are not inspected.
-It should be possible to inspect the arguments of the current call stack
-using the output of `debug_backtrace()`, but that is not yet implemented.
+- Scopes other than the global one are not inspected.
+  It should be possible to inspect the arguments of the current call stack
+  using the output of `debug_backtrace()`, but that is not yet implemented.
+
+- Values bound to `Closure->$this` or inherited by Closures via `use (...)`
+  with no other references will not be discovered.
+
+- The local scope of paused Generators is not accessible. For example,
+  if a paused generator has an iterator variable `$i` declared inside with no
+  other references to it existing, it will not be discovered.
+
+- If a captured object is a descendant of another uncaptured object,
+  then recursion handling will (currently) mean that only the first
+  path to the captured object via the uncaptured one will be recorded.
+  eg. a service in Symfony container will only be shown via `$kernel->bundles->...->container[...]`
+      and not also via `$kernel->container[...]`.
+
+- Internal references between PHP objects, that are not exposed to userland,
+  are not discoverable. For example, a `PDOStatement` has an internal strong
+  reference to its `PDOConnection`, but there is no way to access the `PDOConnection`
+  from the `PDOStatement`.
+  It should be possible to use the [uopz extension](https://www.php.net/manual/en/book.uopz.php)
+  to hook `PDOConnection->prepare(...)` and link back to it from the `PDOStatement`, however
+  this must be done carefully to avoid preventing the `PDOConnection` from being GC'd.
