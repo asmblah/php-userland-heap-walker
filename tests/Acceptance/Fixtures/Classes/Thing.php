@@ -13,7 +13,7 @@ class Thing
     /**
      * @var mixed
      */
-    private $value;
+    public $value;
 
     /**
      * @param string $description

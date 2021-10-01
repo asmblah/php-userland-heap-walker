@@ -6,6 +6,8 @@ namespace Asmblah\HeapWalk\Tests\Acceptance\Integrated\Walk;
 
 use Asmblah\HeapWalk\Result\Path\Descension\Root\GlobalVariableRoot;
 use Asmblah\HeapWalk\Tests\Acceptance\AcceptanceTestCase;
+use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\MagicSubThing;
+use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\NormalSubThing;
 use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\Thing;
 use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\UncapturedClass;
 use Asmblah\HeapWalk\Walker\ArrayWalker;
@@ -55,6 +57,15 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         $recursiveUncapturedObject = new UncapturedClass('I contain a reference to myself');
         $recursiveUncapturedObject->setValue($recursiveUncapturedObject);
 
+        $subThingWithMagicGetter = new MagicSubThing('magic getter could shadow ->description');
+        $subThingWithMagicGetter->setValue(new Thing('I am assigned to a shadowed private property'));
+
+        $thingInsideDynamicProperty = new stdClass();
+        $thingInsideDynamicProperty->myDynamicProp = new Thing('I am inside a dynamic property');
+
+        $subThingWithParentPropertyUnset = new NormalSubThing('my ->description has been unset');
+        $subThingWithParentPropertyUnset->unsetPrivateDescriptionProperty();
+
         $this->heapWalker = new HeapWalker($valueWalker, [
             // Non-Thing, to be ignored.
             new GlobalVariableRoot('stdClass-to-ignore', new stdClass()),
@@ -78,7 +89,14 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
             // A Thing that is inside an instance of an uncaptured class.
             new GlobalVariableRoot('thing-inside-other-object', $thingInsideUncapturedObject),
             // An uncaptured non-Thing that just refers to itself, to test recursion handling.
-            $recursiveUncapturedObject,
+            new GlobalVariableRoot('uncaptured-self-referencing-non-thing', $recursiveUncapturedObject),
+            // A SubThing that contains a Thing in the private Thing->description property,
+            // but that could be shadowed by SubThing::__get(...).
+            new GlobalVariableRoot('sub-thing-with-magic-getter', $subThingWithMagicGetter),
+            // Make sure dynamic properties are checked.
+            new GlobalVariableRoot('thing-inside-dynamic-prop', $thingInsideDynamicProperty),
+            // Make sure we can cope with declared properties being unset for an instance.
+            new GlobalVariableRoot('sub-thing-with-parent-prop-unset', $subThingWithParentPropertyUnset),
         ]);
     }
 
@@ -86,7 +104,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
     {
         $pathSets = $this->heapWalker->getInstancePathSets([Thing::class]);
 
-        static::assertCount(6, $pathSets);
+        static::assertCount(8, $pathSets);
         static::assertEquals(
             [
                 'fqcn' => Thing::class,
@@ -143,6 +161,24 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
                 ],
             ],
             $pathSets[5]->toArray()
+        );
+        static::assertEquals(
+            [
+                'fqcn' => Thing::class,
+                'paths' => [
+                    '$GLOBALS[sub-thing-with-magic-getter]->(Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\MagicSubThing::$value)',
+                ],
+            ],
+            $pathSets[6]->toArray()
+        );
+        static::assertEquals(
+            [
+                'fqcn' => Thing::class,
+                'paths' => [
+                    '$GLOBALS[thing-inside-dynamic-prop]->(stdClass::$myDynamicProp)',
+                ],
+            ],
+            $pathSets[7]->toArray()
         );
     }
 }
