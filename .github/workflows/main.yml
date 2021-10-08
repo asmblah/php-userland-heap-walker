@@ -6,18 +6,14 @@ jobs:
     psalm:
         runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                php-version: [7.3, 7.4]
-
         steps:
             # Check out the repository under $GITHUB_WORKSPACE, so this job can access it
             - uses: actions/checkout@v2
 
-            - name: Use PHP ${{ matrix.php-version }}
+            - name: Use PHP 7.4
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: ${{ matrix.php-version }}
+                  php-version: 7.4
 
             - name: Install Composer dependencies
               run: composer install
