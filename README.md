@@ -74,9 +74,8 @@ assert($pathSets[0]->getPaths()[0]->getEventualValue()->description === 'a cabba
 
 ## Caveats & limitations
 
-- Scopes other than the global one are not inspected.
-  It should be possible to inspect the arguments of the current call stack
-  using the output of `debug_backtrace()`, but that is not yet implemented.
+- Scopes other than the global one are not fully inspected; only their arguments are captured
+  through use of `debug_backtrace()`.
 
 - Values bound to `Closure->$this` or inherited by Closures via `use (...)`
   with no other references will not be discovered.
