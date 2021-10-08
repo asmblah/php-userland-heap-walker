@@ -22,8 +22,9 @@
             "tests/Acceptance/Fixtures/Functions/root_provider_test_functions.php"
         ]
     },
-    "require": {},
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "phpspec/prophecy-phpunit": "^2.0",
+        "vimeo/psalm": "^4.10"
     }
 }

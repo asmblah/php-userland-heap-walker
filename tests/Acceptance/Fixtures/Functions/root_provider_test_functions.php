@@ -17,3 +17,8 @@ function with_two_static_variables(Thing $myNewInstance)
 
     $myInstance = $myNewInstance;
 }
+
+function call_callable(callable $callable)
+{
+    return $callable(new Thing('an argument from a global function'));
+}

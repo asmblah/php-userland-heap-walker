@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Asmblah\HeapWalk\Result\Path;
 
+use Asmblah\HeapWalk\Result\ClassTools;
+
 /**
  * Class InstancePathSet.
  *
@@ -55,7 +57,7 @@ class InstancePathSet implements PathSetInterface
     public function toArray(): array
     {
         return [
-            'fqcn' => get_class($this->instance),
+            'class' => ClassTools::toReadableClassName(get_class($this->instance)),
             'paths' => array_map(
                 function (PathInterface $path): string {
                     return $path->toString();

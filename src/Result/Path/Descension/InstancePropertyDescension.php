@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Asmblah\HeapWalk\Result\Path\Descension;
 
+use Asmblah\HeapWalk\Result\ClassTools;
+
 /**
  * Class InstancePropertyDescension.
  *
@@ -67,7 +69,7 @@ class InstancePropertyDescension implements DescensionInterface
      */
     public function toArray(): array
     {
-        return ['fqcn' => get_class($this->instance), 'property' => $this->propertyName];
+        return ['class' => ClassTools::toReadableClassName(get_class($this->instance)), 'property' => $this->propertyName];
     }
 
     /**
@@ -75,6 +77,6 @@ class InstancePropertyDescension implements DescensionInterface
      */
     public function toString(): string
     {
-        return '->(' . get_class($this->instance) . '::$' . $this->propertyName . ')';
+        return '->(' . ClassTools::toReadableClassName(get_class($this->instance)) . '::$' . $this->propertyName . ')';
     }
 }

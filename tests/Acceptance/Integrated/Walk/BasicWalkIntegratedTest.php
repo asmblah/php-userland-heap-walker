@@ -107,7 +107,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         static::assertCount(8, $pathSets);
         static::assertEquals(
             [
-                'fqcn' => Thing::class,
+                'class' => Thing::class,
                 'paths' => [
                     '$GLOBALS[array-with-instance-elements][first]',
                 ],
@@ -116,7 +116,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         );
         static::assertEquals(
             [
-                'fqcn' => Thing::class,
+                'class' => Thing::class,
                 'paths' => [
                     '$GLOBALS[array-with-instance-elements][second]',
                     '$GLOBALS[array-with-instance-elements][second-again]',
@@ -126,7 +126,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         );
         static::assertEquals(
             [
-                'fqcn' => Thing::class,
+                'class' => Thing::class,
                 'paths' => [
                     '$GLOBALS[recursive-array][a-thing]',
                 ],
@@ -135,7 +135,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         );
         static::assertEquals(
             [
-                'fqcn' => Thing::class,
+                'class' => Thing::class,
                 'paths' => [
                     '$GLOBALS[recursive-instance]',
                     '$GLOBALS[recursive-instance]->(Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\Thing::$value)[self]',
@@ -145,7 +145,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         );
         static::assertEquals(
             [
-                'fqcn' => Thing::class,
+                'class' => Thing::class,
                 'paths' => [
                     '$GLOBALS[closure-bound-to-thing]->(Closure::$this)',
                     '$GLOBALS[closure-inheriting-thing] (Closure) use ($thingForClosures)',
@@ -155,7 +155,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         );
         static::assertEquals(
             [
-                'fqcn' => Thing::class,
+                'class' => Thing::class,
                 'paths' => [
                     '$GLOBALS[thing-inside-other-object]->(Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\UncapturedClass::$value)',
                 ],
@@ -164,7 +164,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         );
         static::assertEquals(
             [
-                'fqcn' => Thing::class,
+                'class' => Thing::class,
                 'paths' => [
                     '$GLOBALS[sub-thing-with-magic-getter]->(Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\MagicSubThing::$value)',
                 ],
@@ -173,7 +173,7 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         );
         static::assertEquals(
             [
-                'fqcn' => Thing::class,
+                'class' => Thing::class,
                 'paths' => [
                     '$GLOBALS[thing-inside-dynamic-prop]->(stdClass::$myDynamicProp)',
                 ],

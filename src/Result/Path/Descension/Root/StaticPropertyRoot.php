@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Asmblah\HeapWalk\Result\Path\Descension\Root;
 
+use Asmblah\HeapWalk\Result\ClassTools;
+
 /**
  * Class StaticPropertyRoot.
  *
@@ -59,7 +61,11 @@ class StaticPropertyRoot implements RootInterface
      */
     public function toArray(): array
     {
-        return ['class' => $this->className, 'property' => $this->propertyName, 'value' => $this->value];
+        return [
+            'class' => ClassTools::toReadableClassName($this->className),
+            'property' => $this->propertyName,
+            'value' => $this->value,
+        ];
     }
 
     /**
@@ -67,6 +73,6 @@ class StaticPropertyRoot implements RootInterface
      */
     public function toString(): string
     {
-        return $this->className . '::$' . $this->propertyName;
+        return ClassTools::toReadableClassName($this->className) . '::$' . $this->propertyName;
     }
 }
