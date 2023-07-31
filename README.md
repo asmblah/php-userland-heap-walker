@@ -77,9 +77,6 @@ assert($pathSets[0]->getPaths()[0]->getEventualValue()->description === 'a cabba
 - Scopes other than the global one are not fully inspected; only their arguments are captured
   through use of `debug_backtrace()`.
 
-- Values bound to `Closure->$this` or inherited by Closures via `use (...)`
-  with no other references will not be discovered.
-
 - The local scope of paused [Generators](https://www.php.net/manual/en/language.generators.overview.php) is not accessible. For example,
   if a paused generator has an iterator variable `$i` declared inside with no
   other references to it existing, it will not be discovered.
