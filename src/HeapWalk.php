@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Asmblah\HeapWalk;
 
+use Asmblah\HeapWalk\Result\Path\PathSetCollection;
+use Asmblah\HeapWalk\Result\Path\PathSetCollectionInterface;
 use Asmblah\HeapWalk\Result\Path\PathSetInterface;
 use Asmblah\HeapWalk\Root\DelegatingRootProvider;
 use Asmblah\HeapWalk\Root\RootProviderFactory;
@@ -60,6 +62,20 @@ class HeapWalk
     /**
      * Fetches all instances of the given Fully-Qualified Class Names given, with one InstancePathSet
      * per instance found. Each InstancePathSet will contain all paths that lead to the instance from a root.
+     *
+     * @param string[] $fqcns
+     * @return PathSetCollectionInterface
+     */
+    public function getInstancePathSetCollection(array $fqcns): PathSetCollectionInterface
+    {
+        return new PathSetCollection($this->getInstancePathSets($fqcns));
+    }
+
+    /**
+     * Fetches all instances of the given Fully-Qualified Class Names given, with one InstancePathSet
+     * per instance found. Each InstancePathSet will contain all paths that lead to the instance from a root.
+     *
+     * @deprecated Use ->getInstancePathSetCollection(...) instead.
      *
      * @param string[] $fqcns
      * @return PathSetInterface[]
