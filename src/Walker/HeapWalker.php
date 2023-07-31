@@ -43,39 +43,40 @@ class HeapWalker
      */
     public function getInstancePathSets(array $fqcns): array
     {
-        $dataByInstanceHash = [];
-        $instanceHashesVisited = [];
+        /** @var array<int, array{instance: object, paths: Path}> $dataByInstanceId */
+        $dataByInstanceId = [];
+        /** @var array<int, bool> $instanceIdsVisited */
+        $instanceIdsVisited = [];
 
         foreach ($this->roots as $root) {
             $this->valueWalker->walkValue(
                 $root->getValue(),
-                function ($value, array $descensions) use ($fqcns, &$dataByInstanceHash, &$instanceHashesVisited) {
+                function ($value, array $descensions) use ($fqcns, &$dataByInstanceId, &$instanceIdsVisited) {
                     if (!is_object($value)) {
                         // We're only interested in inspecting objects, but we still want to recurse
-                        // as applicable, eg. into arrays.
+                        // as applicable, e.g. into arrays.
                         return true;
                     }
 
                     $descend = true;
-                    $hash = spl_object_hash($value);
+                    $objectId = spl_object_id($value);
 
-                    if (array_key_exists($hash, $instanceHashesVisited)) {
+                    if (array_key_exists($objectId, $instanceIdsVisited)) {
                         // We already processed this object, don't descend into it again.
                         $descend = false;
                     } else {
-                        $instanceHashesVisited[$hash] = true;
+                        $instanceIdsVisited[$objectId] = true;
                     }
 
-                    // TODO: Handle subclasses
+                    // TODO: Handle subclasses.
                     if (in_array(get_class($value), $fqcns, true)) {
-                        $hash = spl_object_hash($value);
                         $path = new Path($descensions);
 
-                        if (!array_key_exists($hash, $dataByInstanceHash)) {
-                            $dataByInstanceHash[$hash] = ['instance' => $value, 'paths' => []];
+                        if (!array_key_exists($objectId, $dataByInstanceId)) {
+                            $dataByInstanceId[$objectId] = ['instance' => $value, 'paths' => []];
                         }
 
-                        $dataByInstanceHash[$hash]['paths'][] = $path;
+                        $dataByInstanceId[$objectId]['paths'][] = $path;
                     }
 
                     return $descend;
@@ -86,7 +87,7 @@ class HeapWalker
 
         $pathSets = [];
 
-        foreach ($dataByInstanceHash as $data) {
+        foreach ($dataByInstanceId as $data) {
             $pathSets[] = new InstancePathSet($data['instance'], $data['paths']);
         }
 
