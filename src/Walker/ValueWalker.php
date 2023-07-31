@@ -16,7 +16,7 @@ use RuntimeException;
  */
 class ValueWalker
 {
-    public const DEFAULT_MAX_DEPTH = 20;
+    public const DEFAULT_MAX_DEPTH = 100;
     /**
      * @var ArrayWalker
      */
