@@ -11,6 +11,7 @@ use Asmblah\HeapWalk\Tests\Acceptance\AcceptanceTestCase;
 use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\Thing;
 use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\WithStaticProperties;
 use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Classes\WithStaticVariablesInsideMethods;
+use Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Traits\WithStaticVariablesInsideMethodsTrait;
 use Prophecy\PhpUnit\ProphecyTrait;
 use function Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Functions\with_two_static_variables;
 
@@ -98,7 +99,8 @@ class RootProviderIntegratedTest extends AcceptanceTestCase
         $rootSourceProvider->getClassNames()
             ->willReturn([
                 WithStaticProperties::class,
-                WithStaticVariablesInsideMethods::class
+                WithStaticVariablesInsideMethods::class,
+                WithStaticVariablesInsideMethodsTrait::class
             ]);
         $rootSourceProvider->getFunctionNames()
             ->willReturn([
@@ -120,7 +122,7 @@ class RootProviderIntegratedTest extends AcceptanceTestCase
     {
         $rootValues = $this->rootProvider->getRoots();
 
-        static::assertCount(11, $rootValues);
+        static::assertCount(13, $rootValues);
         static::assertEquals(
             [
                 'function' => 'my_func',
@@ -176,11 +178,27 @@ class RootProviderIntegratedTest extends AcceptanceTestCase
         );
         static::assertEquals(
             [
+                'value' => 'my value for static var in instance method of trait',
+                'function' => WithStaticVariablesInsideMethodsTrait::class . '::myInstanceMethod',
+                'name' => 'myVarInsideInstanceMethod',
+            ],
+            $rootValues[7]->toArray()
+        );
+        static::assertEquals(
+            [
+                'value' => 'my value for static var in static method of trait',
+                'function' => WithStaticVariablesInsideMethodsTrait::class . '::myStaticMethod',
+                'name' => 'myVarInsideStaticMethod',
+            ],
+            $rootValues[8]->toArray()
+        );
+        static::assertEquals(
+            [
                 'function' => 'Asmblah\HeapWalk\Tests\Acceptance\Fixtures\Functions\with_two_static_variables',
                 'name' => 'aString',
                 'value' => 'my string in a static variable',
             ],
-            $rootValues[7]->toArray()
+            $rootValues[9]->toArray()
         );
         static::assertEquals(
             [
@@ -188,21 +206,21 @@ class RootProviderIntegratedTest extends AcceptanceTestCase
                 'name' => 'myInstance',
                 'value' => $this->staticVariableValue,
             ],
-            $rootValues[8]->toArray()
+            $rootValues[10]->toArray()
         );
         static::assertEquals(
             [
                 'name' => 'firstGlobal',
                 'value' => $this->firstGlobal,
             ],
-            $rootValues[9]->toArray()
+            $rootValues[11]->toArray()
         );
         static::assertEquals(
             [
                 'name' => 'secondGlobal',
                 'value' => $this->secondGlobal,
             ],
-            $rootValues[10]->toArray()
+            $rootValues[12]->toArray()
         );
     }
 }

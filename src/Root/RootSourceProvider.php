@@ -29,7 +29,7 @@ class RootSourceProvider implements RootSourceProviderInterface
     public function getClassNames(): array
     {
         // Fetch all standard declared classes.
-        $classNames = get_declared_classes();
+        $classNames = array_merge(get_declared_classes(), get_declared_traits());
 
         // Add any anonymous classes in the scope of a stack frame.
         foreach ($this->getBacktrace() as $stackFrame) {
