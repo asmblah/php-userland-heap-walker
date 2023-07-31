@@ -29,6 +29,6 @@ class ClassToolsTest extends TestCase
     {
         $anonymousClassName = get_class(new class {});
 
-        static::assertSame('\\__anonymous__', ClassTools::toReadableClassName($anonymousClassName));
+        static::assertSame('\__anonymous__', ClassTools::toReadableClassName($anonymousClassName));
     }
 }

@@ -52,7 +52,7 @@ class InstanceWalker
             foreach ($properties as $reflectionProperty) {
                 if ($reflectionProperty->getDeclaringClass()->getName() !== $reflectionClassOrObject->getName()) {
                     // Ignore properties that are not declared by the class currently being handled
-                    // (eg. inherited public properties).
+                    // (e.g. inherited public properties).
                     continue;
                 }
 
@@ -120,7 +120,7 @@ class InstanceWalker
             $propertyValue = $reflectionProperty->getValue($instance);
         } else {
             /*
-             * NB: Private methods are hidden from sub-classes, if a subclass defines __get()/__set()
+             * NB: Private properties are hidden from sub-classes, if a subclass defines __get()/__set()
              *     those will be called even if ->setAccessible(true) was used, so we bind
              *     a closure to the property's owning class instead.
              */

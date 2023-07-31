@@ -87,7 +87,7 @@ assert($pathSets[0]->getPaths()[0]->getEventualValue()->description === 'a cabba
 - If a captured object is a descendant of another uncaptured object,
   then recursion handling will (currently) mean that only the first
   path to the captured object via the uncaptured one will be recorded.
-  eg. a service in Symfony container will only be shown via `$kernel->bundles->...->container[...]`
+  e.g. a service in Symfony container will only be shown via `$kernel->bundles->...->container[...]`
       and not also via `$kernel->container[...]`.
 
 - Internal references between PHP objects, that are not exposed to userland,
