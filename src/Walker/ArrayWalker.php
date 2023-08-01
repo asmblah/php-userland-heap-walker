@@ -22,25 +22,26 @@ class ArrayWalker
     private $valueWalker;
 
     /**
+     * Walks the given array, using ValueWalker for recursion.
+     *
      * @param array $array
      * @param callable $visitor
      * @param DescensionInterface[] $descensions
      */
     public function walkArray(array $array, callable $visitor, array $descensions): void
     {
-        array_walk(
-            $array,
-            function ($elementValue, $elementKey) use ($array, $descensions, $visitor) {
-                $this->valueWalker->walkValue(
-                    $elementValue,
-                    $visitor,
-                    array_merge($descensions, [new ArrayElementDescension($array, $elementKey, $elementValue)])
-                );
-            }
-        );
+        foreach ($array as $elementKey => $elementValue) {
+            $this->valueWalker->walkValue(
+                $elementValue,
+                $visitor,
+                array_merge($descensions, [new ArrayElementDescension($array, $elementKey, $elementValue)])
+            );
+        }
     }
 
     /**
+     * Injects the ValueWalker service (cannot inject via constructor due to circular dependency).
+     *
      * @param ValueWalker $valueWalker
      */
     public function setValueWalker(ValueWalker $valueWalker): void
