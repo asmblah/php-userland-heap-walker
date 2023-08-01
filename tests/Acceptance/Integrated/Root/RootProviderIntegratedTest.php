@@ -118,6 +118,21 @@ class RootProviderIntegratedTest extends AcceptanceTestCase
         $this->rootProvider = (new RootProviderFactory($rootSourceProvider->reveal()))->createProvider();
     }
 
+    public function tearDown(): void
+    {
+        // Clear down data so that it does not affect subsequent tests,
+        // as PHPUnit keeps test instances around until the end of the run.
+        // TODO: Something more generic, similar to https://github.com/mybuilder/phpunit-accelerator.
+        $this->firstGlobal = null;
+        $this->globalFunctionArg = null;
+        $this->instanceMethodArg = null;
+        $this->rootProvider = null;
+        $this->secondGlobal = null;
+        $this->staticMethodArg = null;
+        $this->staticPropertyValue = null;
+        $this->staticVariableValue = null;
+    }
+
     public function testGetRootsReturnsCorrectRoots(): void
     {
         $rootValues = $this->rootProvider->getRoots();

@@ -31,6 +31,14 @@ class DiffingResultsFunctionalTest extends AcceptanceTestCase
         $this->heapWalk = new HeapWalk();
     }
 
+    public function tearDown(): void
+    {
+        // Clear down data so that it does not affect subsequent tests,
+        // as PHPUnit keeps test instances around until the end of the run.
+        $this->heapWalk = null;
+        $this->things = [];
+    }
+
     public function testDiffingResultsGivesEmptyDiffWhenReachableHeapIsUnchanged(): void
     {
         $initialCollection = $this->heapWalk->getInstancePathSetCollection([Thing::class]);

@@ -100,6 +100,13 @@ class BasicWalkIntegratedTest extends AcceptanceTestCase
         ]);
     }
 
+    public function tearDown(): void
+    {
+        // Clear down data so that it does not affect subsequent tests,
+        // as PHPUnit keeps test instances around until the end of the run.
+        $this->heapWalker = null;
+    }
+
     public function testWalkArrayWithInstances(): void
     {
         $pathSets = $this->heapWalker->getInstancePathSets([Thing::class]);

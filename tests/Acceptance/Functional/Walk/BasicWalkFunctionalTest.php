@@ -33,8 +33,11 @@ class BasicWalkFunctionalTest extends AcceptanceTestCase
         $this->heapWalk = new HeapWalk();
     }
 
-    protected function tearDown(): void
+    public function tearDown(): void
     {
+        // Clear down data so that it does not affect subsequent tests,
+        // as PHPUnit keeps test instances around until the end of the run.
+        $this->heapWalk = null;
         self::$thing = null;
     }
 
